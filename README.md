@@ -1,0 +1,1 @@
+# Huawei-Server_Management_Plugin_Puppet
