@@ -1,0 +1,17 @@
+{
+  "name": "serverplugin-rest",
+  "version": "1.0.0",
+  "author": "Qianbiao.NG",
+  "summary": "huawei rest tool puppet module",
+  "license": "Apache-2.0",
+  "source": "https://github.com/Huawei/Server_Management_Plugin_Puppet.git",
+  "project_page": "https://github.com/Huawei/Server_Management_Plugin_Puppet",
+  "issues_url": "https://github.com/Huawei/Server_Management_Plugin_Puppet/issues",
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">= 4.20.0"
+    }
+  ],
+  "data_provider": null
+}
