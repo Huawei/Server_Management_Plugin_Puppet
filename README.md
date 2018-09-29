@@ -84,7 +84,7 @@ All Rest resource type share those attributes:
 
 Rest module resource types can visit BMC API anywhere, resource type is free to run on anywhere.
 
-### /rest::bios::boot::get
+### rest::bios:\:boot::get
 
 Get boot settings.
 
@@ -97,7 +97,7 @@ No additional attributes
 [boot_get.pp](./examples/boot_get.pp)
 
 
-### rest::bios::boot::order
+### rest::bios:\:boot::order
 
 Set boot order.
 
@@ -111,7 +111,7 @@ Set boot order.
 
 [boot_order.pp](./examples/boot_order.pp)
 
-### rest::bios::boot::override
+### rest::bios:\:boot::override
 
 Set boot source override.
 
