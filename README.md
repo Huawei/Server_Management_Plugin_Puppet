@@ -44,27 +44,27 @@ Check [Puppet Labs: Installing Modules](https://docs.puppetlabs.com/puppet/lates
 
 These Puppet resources are defined as part of `Rest` module:
 
-* [`rest::bios::boot::get`](#restbiosget)
-* [`rest::bios::boot::order`](#restbiosrestore)
-* [`rest::bios::boot::override`](#restbiosset)
-* [`rest::bios::get`](#restbmcpowerrestart)
-* [`rest::bios::restore`](#restbiosbootget)
-* [`rest::bios::set`](#restbiosbootorder)
-* [`rest::bmc::ethernet::get`](#restbiosbootoverride)
-* [`rest::bmc::ntp::get`](#restsystemcpu)
-* [`rest::bmc::ntp::set`](#restsystemdisk)
-* [`rest::bmc::power::ctrl`](#restbmcethernetget)
-* [`rest::bmc::power::restart`](#restsystemmemory)
-* [`rest::bmc::service::get`](#restbmcntpget)
-* [`rest::bmc::service::set`](#restbmcntpset)
-* [`rest::bmc::smtp::get`](#restsystemraid)
-* [`rest::bmc::smtp::set`](#restbmcserviceget)
-* [`rest::bmc::snmp::get`](#restbmcserviceset)
-* [`rest::bmc::snmp::set`](#restbmcsmtpget)
-* [`rest::system::cpu`](#restbmcsmtpset)
-* [`rest::system::disk`](#restbmcsnmpget)
-* [`rest::system::memory`](#restbmcsnmpset)
-* [`rest::system::raid`](#restbmcpowerctrl)
+* [`rest::bios::boot::get`](#restbiosbootget)
+* [`rest::bios::boot::order`](#restbiosbootorder)
+* [`rest::bios::boot::override`](#restbiosbootoverride)
+* [`rest::bios::get`](#restbisoget)
+* [`rest::bios::restore`](#restbiosrestore)
+* [`rest::bios::set`](#restbioset)
+* [`rest::bmc::ethernet::get`](#restbmcethernetget)
+* [`rest::bmc::ntp::get`](#restbmcntpget)
+* [`rest::bmc::ntp::set`](#restbmcntpset)
+* [`rest::bmc::power::ctrl`](#restbmcpowerctrl)
+* [`rest::bmc::power::restart`](#restbmcpowerctrl)
+* [`rest::bmc::service::get`](#restbmcserviceget)
+* [`rest::bmc::service::set`](#restbmcserviceset)
+* [`rest::bmc::smtp::get`](#restbmcsmtpget)
+* [`rest::bmc::smtp::set`](#restbmcsmtpset)
+* [`rest::bmc::snmp::get`](#restbmcsnmpget)
+* [`rest::bmc::snmp::set`](#restbmcsnmpset)
+* [`rest::system::cpu`](#restsystemcpu)
+* [`rest::system::disk`](#restsystemdisk)
+* [`rest::system::memory`](#restsystemmemory)
+* [`rest::system::raid`](#restsystemraid)
 * [`rest::user::add`](#restuseradd)
 * [`rest::user::delete`](#restuserdelete)
 * [`rest::user::get`](#restuserget)
@@ -84,7 +84,7 @@ All Rest resource type share those attributes:
 
 Rest module resource types can visit BMC API anywhere, resource type is free to run on anywhere.
 
-### rest::bios\::boot::get
+### rest::bios\:\:boot::get
 
 Get boot settings.
 
@@ -97,7 +97,7 @@ No additional attributes
 [boot_get.pp](./examples/boot_get.pp)
 
 
-### \rest::bios::boot::order
+### rest::bios\::boot\::order
 
 Set boot order.
 
