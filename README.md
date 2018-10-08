@@ -84,7 +84,7 @@ All Rest resource type share those attributes:
 
 Rest module resource types can visit BMC API anywhere, resource type is free to run on anywhere.
 
-### rest::bios::\boot::get
+### rest::bios::\\boot::get
 
 Get boot settings.
 
