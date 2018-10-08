@@ -97,7 +97,7 @@ No additional attributes
 [boot_get.pp](./examples/boot_get.pp)
 
 
-### rest::bios::\boot::order
+### rest::bios:: boot::order
 
 Set boot order.
 
@@ -111,7 +111,7 @@ Set boot order.
 
 [boot_order.pp](./examples/boot_order.pp)
 
-### rest::bios::\boot::override
+### rest::bios:: boot::override
 
 Set boot source override.
 
