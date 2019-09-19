@@ -14,12 +14,12 @@ define rest::system::cpu (
   # init rest
   include ::rest
 
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
-  $command = "getcpu"
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
+  $command = 'getcpu'
 
-  exec { "$title":
-    command => "${script} ${command}",
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
-  
+
 }

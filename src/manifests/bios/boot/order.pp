@@ -16,12 +16,12 @@ define rest::bios::boot::order (
   include ::rest
 
   # convert sequence to string
-  $joined = join($sequence, " ")
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
+  $joined = join($sequence, ' ')
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
   $command = "setsysboot -Q ${joined}"
 
-  exec { "$title":
-    command => "${script} ${command}",
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
 

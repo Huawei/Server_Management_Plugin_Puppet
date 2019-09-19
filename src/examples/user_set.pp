@@ -14,7 +14,7 @@ node default {
   # load hosts from hiera data-source
   $hosts = lookup('hosts')
 
-  # user role available values:
+  # new user role available values:
   #   "Administrator", "Operator", "Commonuser", "NoAccess",
   #   "CustomRole1", "CustomRole2", "CustomRole3", "CustomRole4"
 
@@ -28,8 +28,8 @@ node default {
       newusername   => "${data['user-set-name']}",
       newpassword   => "${data['user-set-password']}",
       newrole       => "Operator",
-      enabled       => true,
-      locked        => false,
+      enabled       => false,
+      locked        => true,
     }
   }
 }

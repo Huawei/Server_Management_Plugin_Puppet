@@ -11,20 +11,22 @@
 #
 node default {
 
-  # target => {None,Pxe,Floppy,Cd,Hdd,BiosSetup} default: Pxe
-  # enabled => {Once,Disabled,Continuous} default: Once
+  # target => {None,Pxe,Floppy,Cd,Hdd,BiosSetup} default Pxe
+  # enabled => {Once,Disabled,Continuous} default Once
+  # mode => {Legacy, UEFI} default Once
 
   # load hosts from hiera data-source
   $hosts = lookup('hosts')
 
   # interate all hosts and get bios
   $hosts.each | String $hostname, Hash $data | {
-    rest::bios::boot::override { "$hostname":
-      ibmc_host       =>  "$hostname",
-      ibmc_username   =>  "${data['username']}",
-      ibmc_password   =>  "${data['password']}",
-      target          =>  "Pxe",
-      enabled         =>  "Once"
+    rest::bios::boot::override { $hostname:
+      ibmc_host     =>  $hostname,
+      ibmc_username =>  $data['username'],
+      ibmc_password =>  $data['password'],
+      target        =>  'Pxe',
+      enabled       =>  'Once',
+      mode          =>  'Legacy',
     }
   }
 }

@@ -1,1 +1,1 @@
-type Rest::SnmpV3PrivProtocol = Enum["DES", "AES"]
+type Rest::SnmpV3PrivProtocol = Enum['DES', 'AES']

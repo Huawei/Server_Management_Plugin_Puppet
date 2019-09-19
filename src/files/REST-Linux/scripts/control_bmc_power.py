@@ -7,6 +7,7 @@
 #   @Date:
 #=========================================================================
 '''
+import upgrade_sp
 
 
 def controlbmcpower_init(parser, parser_list):
@@ -57,6 +58,6 @@ def controlbmcpower(client, parser, args):
                 [0]['Message']
             print('Failure:' + msg)
         else:
-            print('Failure: unknown error')
+            upgrade_sp.print_status_code(resp)
 
-    return
+    return resp

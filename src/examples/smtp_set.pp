@@ -19,36 +19,28 @@ node default {
 
   # interate all hosts and get bios
   $hosts.each | String $hostname, Hash $data | {
-    rest::bmc::smtp::set { "$hostname":
-      ibmc_host              => "$hostname",
-      ibmc_username          => "${data['username']}",
-      ibmc_password          => "${data['password']}",
+    rest::bmc::smtp::set { $hostname:
+      ibmc_host              => $hostname,
+      ibmc_username          => $data['username'],
+      ibmc_password          => $data['password'],
       enabled                => true,
-      server_addr            => "10.0.0.1",
+      server_addr            => 'smtp.qq.com',
       tls_enabled            => true,
       anon_enabled           => false,
-      sender_addr            => "smtp@test.com",
-      sender_password        => "${data['smtp-sender-pwd']}",
-      sender_username        => "${data['smtp-sender-username']}",
-      email_subject          => "Server Alert",
+      sender_addr            => 'sample@huawei.com',
+      sender_password        => $data['smtp-sender-pwd'],
+      sender_username        => $data['smtp-sender-username'],
+      email_subject          => 'Server Alert',
       email_subject_contains => [
-        "HostName",
-        "BoardSN",
-        "ProductAssetTag",
+        'HostName',
+        'BoardSN',
+        'ProductAssetTag',
       ],
-      alarm_severity         => "Normal",
-      receipt1               => {
-        'enabled'       => true,
-        'email_address' => 'example1@test.com',
-        'description'   => 'example1'
-      },
+      alarm_severity         => 'Major',
       receipt2               => {
         'enabled'       => true,
-        'email_address' => 'example2@test.com',
-        'description'   => 'example2'
-      },
-      receipt3               => {
-        'enabled'       => false,
+        'email_address' => 'test@huawei.com',
+        'description'   => 'test'
       },
       receipt4               => {
         'enabled'       => false,

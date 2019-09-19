@@ -9,6 +9,7 @@
 # @date: 2017.7.21
 #==========================================================================
 '''
+import sys
 
 HELP_INFO = '''specify service information(State and Port value).'''
 PRINT_STYLE = "%-35s:     %s"
@@ -70,10 +71,9 @@ def getnetservice(client, parser, args):
                 flag = 1
         if flag == 1:
             if service_info['Oem']['Huawei'] is None:
-                print('Failure: the -PRO parameter is invalid')
-                return resp
-        if args.Protocol != None:
-            getspecifynetprop(service_info, key)
+                parser.error('Failure: the -PRO parameter is invalid')
+        if args.Protocol is not None:
+            getspecifynetprop(service_info, key, parser)
             return resp
         getnetprop(service_info)
 
@@ -82,7 +82,7 @@ def getnetservice(client, parser, args):
     return resp
 
 
-def getspecifynetprop(service_info, key):
+def getspecifynetprop(service_info, key, parser):
     '''
     #==========================================================================
     #   @Method:  Obtain subfunctions of specified network service attributes.
@@ -94,15 +94,14 @@ def getspecifynetprop(service_info, key):
     #==========================================================================
     '''
     if service_info is None and key is None:
-        return None
+        sys.exit(127)
 
     # Specify the VNC to be queried and display information.
     if key == ('VNC'):
         # DTS2017081012468
         if service_info.get('Oem', '') == '' or \
                         service_info['Oem']['Huawei'][key] is None:
-            print('Failure: the -PRO parameter is invalid')
-            return None
+            parser.error('Failure: the -PRO parameter is invalid')
         print('')
         print('[%s]' % key)
         state = service_info['Oem']['Huawei'][key]['ProtocolEnabled']
@@ -111,8 +110,7 @@ def getspecifynetprop(service_info, key):
     # DTS2017081012468
     elif service_info.get(key, '') == '' or service_info[key] is None or \
                     service_info[key]['ProtocolEnabled'] is None:
-        print('Failure: the -PRO parameter is invalid')
-        return None
+        parser.error('Failure: the -PRO parameter is invalid')
     # Specify the non-OEM attribute to be queried and display information.
     else:
         print('')
@@ -148,8 +146,12 @@ def getnetprop(service_info):
     #==========================================================================
     '''
     if service_info is None:
-        return None
+        sys.exit(127)
     else:
+        oem = None
+        if 'Oem' in service_info:
+            oem = service_info['Oem'].get('Huawei', None)
+
         for key in service_info:
             if key == ('@odata.context') or (key == '@odata.type') or \
                     (key == '@odata.id') or (key == 'Name') or (key == 'HostName') or \
@@ -157,28 +159,17 @@ def getnetprop(service_info):
                 continue
 
             # If the service is null, the service is not displayed.
-            if service_info[key] is None:
+            if not service_info.get(key, None):
                 continue
 
-            # OEM attribute VNC display
-            if key == 'Oem':
-                vnc_key = 'VNC'
-                if service_info[key]['Huawei'] is None or \
-                                service_info[key]['Huawei'][vnc_key] is None:
-                    continue
-                print('')
-                print('[%s]' % vnc_key)
-                state = service_info[key]['Huawei'][vnc_key]['ProtocolEnabled']
-                port = service_info[key]['Huawei'][vnc_key]['Port']
-            else:
-                state = service_info[key]['ProtocolEnabled']
-                port = service_info[key]['Port']
-                # If the enabling status and the port are null, the service is not displayed.
-                if (state is None) and (port is None):
-                    continue
-                print('')
-                print('[%s]' % key)
+            state = service_info[key].get('ProtocolEnabled', None)
+            port = service_info[key].get('Port', None)
+            # If the enabling status and the port are null, the service is not displayed.
+            if (state is None) and (port is None):
+                continue
 
+            print('')
+            print('[%s]' % key)
             print((PRINT_STYLE) % ("State", state))
             print((PRINT_STYLE) % ("Port", port))
 
@@ -192,5 +183,12 @@ def getnetprop(service_info):
                 print((PRINT_STYLE) % ("NotifyIPv6Scope", notifyipv6scope))
                 print((PRINT_STYLE) % ("NotifyMulticastIntervalSeconds", \
                                        notifymulticastintervalseconds))
+
+            # if key == 'IPMI' and oem is not None and oem.get(key, None):
+            #     for prop in oem.get(key):
+            #         print((PRINT_STYLE) % (prop, oem.get(key).get(prop, None)))
+
+        if oem is not None:
+            getnetprop(oem)
 
     return

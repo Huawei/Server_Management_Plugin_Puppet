@@ -14,12 +14,12 @@ define rest::system::raid (
   # init rest
   include ::rest
 
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
-  $command = "getraid"
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
+  $command = 'getraid'
 
-  exec { "$title":
-    command => "${script} ${command}",
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
-  
+
 }

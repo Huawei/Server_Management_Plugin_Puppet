@@ -15,14 +15,14 @@ define rest::user::get (
   # init rest
   include ::rest
 
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
   $command = $username ? {
-    undef   => "getuser",
+    undef   => 'getuser',
     default => "getuser -N ${username}"
   }
 
-  exec { "$title":
-    command => "${script} ${command}",
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
 }

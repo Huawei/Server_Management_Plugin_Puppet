@@ -21,35 +21,36 @@ define rest::user::set (
   include ::rest
 
   $params = {
-    "-NN"      => $newusername ? {
+    '-NN'      => $newusername ? {
       undef   => undef,
       default => $newusername
     },
-    "-NP"      => $newpassword ? {
+    '-NP'      => $newpassword ? {
       undef   => undef,
       default => $newpassword
     },
-    "-NR"      => $newrole ? {
+    '-NR'      => $newrole ? {
       undef   => undef,
       default => $newrole
     },
-    "-Enabled"    => $enabled ? {
+    '-Enabled'    => $enabled ? {
       undef   => undef,
       default => bool2str($enabled, 'True', 'False')
     },
   }
-   
+
   $locked2  = $locked ? {
     undef   => '',
-    default => "-Locked"
+    default => '-Locked'
   }
 
   $joined = join(join_keys_to_values(delete_undef_values($params), "' '"), "' '")
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
   $command = "setuser -N ${username} '${joined}' ${locked2}"
-  
-  exec { "$title":
-    command => "${script} ${command}",
+
+
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
 }

@@ -42,6 +42,7 @@ def getuser(client, parser, args):
     if parser is None and args is None:
         return None
 
+    # ���������û�
     url = "/redfish/v1/AccountService/Accounts"
 
     resp = client.get_resource(url)
@@ -49,11 +50,11 @@ def getuser(client, parser, args):
         error_message(client, resp)
         return resp
 
-    resp = getuser_info(client, resp, args)
+    resp = getuser_info(client, resp, args, parser)
     return resp
 
 
-def getuser_info(client, resp, args):
+def getuser_info(client, resp, args, parser):
     '''
     #=====================================================================
     #   @Method:  getuser_info
@@ -63,6 +64,7 @@ def getuser_info(client, resp, args):
     #=====================================================================
     '''
     if args.name is None:
+        # ��ӡ��������
         for user_id in resp['resource']['Members']:
             url = user_id['@odata.id']
             user_resp = client.get_resource(url)
@@ -70,12 +72,13 @@ def getuser_info(client, resp, args):
                 return None
             if user_resp['status_code'] != 200:
                 error_message(client, user_resp)
-                return None
+                return user_resp
 
             print_resource(user_resp['resource'])
 
-        print('-' * 55)
+        print('-' * 60)
     else:
+        # ��ӡһ��ָ������
         for user_id in resp['resource']['Members']:
             url = user_id['@odata.id']
             user_resp = client.get_resource(url)
@@ -83,16 +86,18 @@ def getuser_info(client, resp, args):
                 return None
             if user_resp['status_code'] != 200:
                 error_message(client, user_resp)
-                return None
-
-            if args.name == user_resp['resource']['UserName']:
-                print_resource(user_resp['resource'])
-                print('-' * 55)
                 return user_resp
 
-        print('Failure: the user does not exist')
+            if args.name == user_resp['resource']['UserName']:
+                # �ҵ���ӡ����
+                print_resource(user_resp['resource'])
+                print('-' * 60)
+                return user_resp
 
-    return None
+        # ������û���ҵ�
+        parser.error('Failure: the user does not exist')
+
+    return resp
 
 
 def print_resource(info):
@@ -105,14 +110,18 @@ def print_resource(info):
     #   @date: 2017-8-30 09:05:52
     #=====================================================================
     '''
-    print('-' * 55)
-    print("%-16s: %s" % ('UserId', info['Id']))
-    print("%-16s: %s" % ('UserName', info['UserName']))
-    print("%-16s: %s" % ('RoleId', info['RoleId']))
-    print("%-16s: %s" % ('Locked', info['Locked']))
-    print("%-16s: %s" % ('Enabled', info['Enabled']))
-    print("%-16s: %s" % ('LoginInterface',
-                         ','.join(info['Oem']['Huawei']['LoginInterface'])))
+    format_str = "%-28s%-2s%-s"
+    print('-' * 60)
+    print(format_str % ('UserId', ":", info['Id']))
+    print(format_str % ('UserName', ":", info['UserName']))
+    print(format_str % ('RoleId', ":", info['RoleId']))
+    print(format_str % ('Locked', ":", info['Locked']))
+    print(format_str % ('Enabled', ":", info['Enabled']))
+    print(format_str % ('LoginInterface', ":",
+                            ','.join(info['Oem']['Huawei']['LoginInterface'])))
+    if 'AccountInsecurePromptEnabled' in info['Oem']['Huawei'].keys():
+        print(format_str % ('AccountInsecurePromptEnabled', ":",
+                                info['Oem']['Huawei']['AccountInsecurePromptEnabled']))
 
 
 def error_message(client, resp):

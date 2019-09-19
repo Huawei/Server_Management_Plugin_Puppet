@@ -14,12 +14,12 @@ define rest::bmc::ntp::get (
   # init rest
   include ::rest
 
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
-  $command = "getntp"
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
+  $command = 'getntp'
 
-  exec { "$title":
-    command => "${script} ${command}",
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
-  
+
 }

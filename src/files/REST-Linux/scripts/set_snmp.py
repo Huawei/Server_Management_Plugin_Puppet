@@ -286,7 +286,7 @@ def check_err_info(resp, code):
     if code == 200:
         print(FAILURE_MESS)
         part_err(err_message)
-        return None
+        sys.exit(144)
     return resp
 
 

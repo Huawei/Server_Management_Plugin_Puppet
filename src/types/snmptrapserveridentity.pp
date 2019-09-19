@@ -1,1 +1,1 @@
-type Rest::SnmpTrapServerIdentity = Enum["BoardSN", "ProductAssetTag", "HostName"]
+type Rest::SnmpTrapServerIdentity = Enum['BoardSN', 'ProductAssetTag', 'HostName']

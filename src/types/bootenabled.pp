@@ -1,1 +1,1 @@
-type Rest::BootEnabled = Enum["Once", "Disabled", "Continuous"]
+type Rest::BootEnabled = Enum['Once', 'Disabled', 'Continuous']

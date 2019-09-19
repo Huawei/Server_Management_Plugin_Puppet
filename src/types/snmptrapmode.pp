@@ -1,1 +1,1 @@
-type Rest::SnmpTrapMode = Enum["OID", "EventCode", "PreciseAlarm"]
+type Rest::SnmpTrapMode = Enum['OID', 'EventCode', 'PreciseAlarm']

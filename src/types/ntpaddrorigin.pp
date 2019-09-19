@@ -1,1 +1,1 @@
-type Rest::NtpAddrOrigin = Enum["Static", "IPv4", "IPv6"]
+type Rest::NtpAddrOrigin = Enum['Static', 'IPv4', 'IPv6']

@@ -1,1 +1,1 @@
-type Rest::SnmpTrapAlarmSeverity = Enum["Critical", "Major", "Minor", "Normal"]
+type Rest::SnmpTrapAlarmSeverity = Enum['Critical', 'Major', 'Minor', 'Normal']

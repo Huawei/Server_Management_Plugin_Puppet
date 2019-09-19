@@ -1,0 +1,66 @@
+{
+  "InstallMode": "Recommended",
+  "OSType": "Ubuntu16.04.2",
+  "BootType": "LegacyBoot",
+  "RootPwd": "Chajian12#$",
+  "HostName": "puppet",
+  "Language": "en_US.UTF-8",
+  "TimeZone": "Asia/Shanghai",
+  "Keyboard": "us",
+  "CheckFirmware": false,
+  "AutoPosition": true,
+  "Autopart": true,
+  "Software": [
+    {
+      "FileName": "iBMA"
+    }
+  ],
+  "NetCfg": [
+    {
+      "Device": {
+        "Name": "eth0",
+        "MAC": "58:F9:87:7A:A9:75",
+        "Silkprint": {
+          "Location": "mainboard",
+          "DeviceName": "LOM",
+          "Port": "3"
+        }
+      },
+      "IPv4Addresses": [{
+        "Address": "10.10.10.10",
+        "SubnetMask": "255.255.0.0",
+        "Gateway": "10.10.10.1",
+        "AddressOrigin": "Static"
+      }
+      ],
+      "IPv6Addresses": [
+        {
+          "Address": "2015:60b:e3:a05:aed1:63de:c500:731a",
+          "PrefixLength": "64",
+          "Gateway": "::",
+          "AddressOrigin": "Static"
+        }
+      ],
+      "NameServers": [
+        {
+          "DNS": "10.10.10.254"
+        },
+        {
+          "DNS": "10.10.10.253"
+        }
+      ]
+    }
+  ],
+  "Packages": [
+    {
+      "PackageName": [
+        "gcc",
+        "aspell"
+      ],
+      "PatternName": [
+        "x11",
+        "base"
+      ]
+    }
+  ]
+}

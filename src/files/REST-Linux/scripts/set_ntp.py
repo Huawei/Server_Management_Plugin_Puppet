@@ -30,28 +30,28 @@ def setntp_init(parser, parser_list):
     '''
     sub_parser = parser.add_parser('setntp',
                                    help='''set network time protocol information''')
-    sub_parser.add_argument('-M', dest='NtpAddressOrigin', \
-                            type=str, required=False, \
+    sub_parser.add_argument('-M', dest='NtpAddressOrigin',
+                            type=str, required=False,
                             choices=['Static', 'IPv4', 'IPv6'], help='''NTP mode''')
-    sub_parser.add_argument('-S', dest='ServiceEnabled', \
-                            type=str, required=False, \
+    sub_parser.add_argument('-S', dest='ServiceEnabled',
+                            type=str, required=False,
                             choices=['True', 'False'], help='''NTP enable status''')
-    sub_parser.add_argument('-PRE', dest='PreferredNtpServer', \
-                            type=str, required=False, \
+    sub_parser.add_argument('-PRE', dest='PreferredNtpServer',
+                            type=str, required=False,
                             help='''preferred NTP server address''')
-    sub_parser.add_argument('-ALT', dest='AlternateNtpServer', \
-                            type=str, required=False, \
+    sub_parser.add_argument('-ALT', dest='AlternateNtpServer',
+                            type=str, required=False,
                             help='''alternative NTP server address''')
-    sub_parser.add_argument('-MIN', dest='MinPollingInterval', \
-                            type=int, required=False, \
+    sub_parser.add_argument('-MIN', dest='MinPollingInterval',
+                            type=int, required=False,
                             help='''minimum NTP synchronization interval. \
         the value ranges from 3 to 17''')
-    sub_parser.add_argument('-MAX', dest='MaxPollingInterval', \
-                            type=int, required=False, \
+    sub_parser.add_argument('-MAX', dest='MaxPollingInterval',
+                            type=int, required=False,
                             help='''maximum NTP synchronization interval. \
         the value ranges from 3 to 17''')
-    sub_parser.add_argument('-AUT', dest='ServerAuthenticationEnabled', \
-                            type=str, required=False, \
+    sub_parser.add_argument('-AUT', dest='ServerAuthenticationEnabled',
+                            type=str, required=False,
                             choices=['False', 'True'], help='''enable auth status''')
 
     parser_list['setntp'] = sub_parser
@@ -68,25 +68,25 @@ def body_mess(payload, args):
     # @author: 
     #====================================================================================
     '''
-    if args.NtpAddressOrigin != None:
+    if args.NtpAddressOrigin is not None:
         payload['NtpAddressOrigin'] = args.NtpAddressOrigin
-    if args.ServiceEnabled != None:
+    if args.ServiceEnabled is not None:
         if args.ServiceEnabled == 'False':
             payload['ServiceEnabled'] = False
         else:
             payload['ServiceEnabled'] = True
-    if args.PreferredNtpServer != None:
+    if args.PreferredNtpServer is not None:
         payload['PreferredNtpServer'] = args.PreferredNtpServer
-    if args.ServerAuthenticationEnabled != None:
+    if args.ServerAuthenticationEnabled is not None:
         if args.ServerAuthenticationEnabled == 'False':
             payload['ServerAuthenticationEnabled'] = False
         else:
             payload['ServerAuthenticationEnabled'] = True
-    if args.MinPollingInterval != None:
+    if args.MinPollingInterval is not None:
         payload['MinPollingInterval'] = args.MinPollingInterval
-    if args.MaxPollingInterval != None:
+    if args.MaxPollingInterval is not None:
         payload['MaxPollingInterval'] = args.MaxPollingInterval
-    if args.AlternateNtpServer != None:
+    if args.AlternateNtpServer is not None:
         payload['AlternateNtpServer'] = args.AlternateNtpServer
 
 
@@ -99,24 +99,24 @@ def ntp_info(parser, args, payload):
     # @author: 
     #====================================================================================
     '''
-    if args.NtpAddressOrigin == None and \
-                    args.ServiceEnabled == None and args.PreferredNtpServer == None \
-            and args.AlternateNtpServer == None and \
-                    args.MinPollingInterval == None and \
-                    args.MaxPollingInterval == None and \
-                    args.ServerAuthenticationEnabled == None:
+    if args.NtpAddressOrigin is None and \
+                    args.ServiceEnabled is None and args.PreferredNtpServer is None \
+            and args.AlternateNtpServer is None and \
+                    args.MinPollingInterval is None and \
+                    args.MaxPollingInterval is None and \
+                    args.ServerAuthenticationEnabled is None:
         parser.error('at least one parameter is required')
-    if args.MinPollingInterval != None and \
+    if args.MinPollingInterval is not None and \
             (args.MinPollingInterval < 3 or args.MinPollingInterval > 17):
-        parser.error('argument -MIN: invalid choice: %s (choose from 3 to 17)' % \
+        parser.error('argument -MIN: invalid choice: %s (choose from 3 to 17)' %
                      args.MinPollingInterval)
-    if args.MaxPollingInterval != None and \
+    if args.MaxPollingInterval is not None and \
             (args.MaxPollingInterval < 3 or args.MaxPollingInterval > 17):
-        parser.error('argument -MAX: invalid choice: %s (choose from 3 to 17)' % \
+        parser.error('argument -MAX: invalid choice: %s (choose from 3 to 17)' %
                      args.MaxPollingInterval)
-    if args.PreferredNtpServer != None and len(args.PreferredNtpServer) > 67:
+    if args.PreferredNtpServer is not None and len(args.PreferredNtpServer) > 67:
         parser.error(PRE_ERR)
-    if args.AlternateNtpServer != None and len(args.AlternateNtpServer) > 67:
+    if args.AlternateNtpServer is not None and len(args.AlternateNtpServer) > 67:
         parser.error(ALT_ERR)
     body_mess(payload, args)
 
@@ -134,11 +134,9 @@ def all_err(err_message):
     while idx < len(err_message):
         check_info = err_message[idx]['Message']
         if idx == 0:
-            print('%s%s' % \
-                  (check_info[0].lower(), check_info[1:len(check_info) - 1]))
+            print('%s%s' % (check_info[0].lower(), check_info[1:len(check_info) - 1]))
         else:
-            print('         %s%s' % \
-                  (check_info[0].lower(), check_info[1:len(check_info) - 1]))
+            print('         %s%s' % (check_info[0].lower(), check_info[1:len(check_info) - 1]))
         idx += 1
 
 
@@ -178,7 +176,7 @@ def check_err_info(resp, code):
     # Determine whether a permission problem occurs.
     if err_message[0]['MessageId'] == \
             "iBMC.1.0.PropertyModificationNeedPrivilege":
-        print('Failure: you do not have the' + \
+        print('Failure: you do not have the' +
               ' required permissions to perform this operation')
         return None
     # Independent display of 400 messages
@@ -189,7 +187,7 @@ def check_err_info(resp, code):
     if code == 200:
         print(FAILURE_MESS)
         part_err(err_message)
-        return None
+        sys.exit(144)
     return resp
 
 
@@ -211,29 +209,29 @@ def check_pollinginterval(parser, args, resp):
     ntp_max = ntpinfo.get("MaxPollingInterval", None)
     if args.MinPollingInterval is not None:
         if ntp_min is None:
-            parser.error('argument -MIN: the server did ' + \
+            parser.error('argument -MIN: the server did ' +
                          'not support the functionality required')
         elif args.MinPollingInterval > ntp_max \
                 and args.MaxPollingInterval is None:
-            parser.error('argument -MIN: minimum NTP ' + \
-                         'synchronization interval must be less than ' + \
+            parser.error('argument -MIN: minimum NTP ' +
+                         'synchronization interval must be less than ' +
                          'or equal to maximum NTP synchronization interval')
 
     if args.MaxPollingInterval is not None:
         if ntp_max is None:
-            parser.error('argument -MAX: the server did not ' + \
+            parser.error('argument -MAX: the server did not ' +
                          'support the functionality required')
         elif args.MaxPollingInterval < ntp_min \
                 and args.MinPollingInterval is None:
-            parser.error('argument -MAX: maximum NTP ' + \
-                         'synchronization interval must be greater ' + \
+            parser.error('argument -MAX: maximum NTP ' +
+                         'synchronization interval must be greater ' +
                          'than or equal to minimum NTP synchronization interval')
 
-    if args.MaxPollingInterval != None and \
-                    args.MinPollingInterval != None:
+    if args.MaxPollingInterval is not None and \
+                    args.MinPollingInterval is not None:
         if args.MaxPollingInterval < args.MinPollingInterval:
-            parser.error('argument -MAX: maximum NTP ' + \
-                         'synchronization interval must be greater ' + \
+            parser.error('argument -MAX: maximum NTP ' +
+                         'synchronization interval must be greater ' +
                          'than or equal to minimum NTP synchronization interval')
     return True
 
@@ -252,7 +250,7 @@ def setntp(client, parser, args):
     payload = {}
     ntp_info(parser, args, payload)
     slotid = client.get_slotid()
-    if slotid == None:
+    if slotid is None:
         return None
     url = "/redfish/v1/Managers/%s/Ntpservice" % slotid
     resp = client.get_resource(url)
@@ -269,7 +267,7 @@ def setntp(client, parser, args):
 
     # Set attributes.
     resp = client.set_resource(url, payload)
-    if resp == None:
+    if resp is None:
         return None
     if resp['status_code'] == 200:
         # Determine whether all attributes are set successfully. Query @Message.ExtendedInf

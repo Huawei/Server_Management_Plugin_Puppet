@@ -5,7 +5,7 @@
 # @command: getethernet
 # @Param:
 # @author:
-# @date: 2018.9.10
+# @date: 2017.8.1
 #=============================================================
 '''
 FORMAT = '%-20s: %s'
@@ -17,7 +17,7 @@ def getethernet_init(parser, parser_list):
     # @Method:Register IP address commands.
     # @Param: parser, parser_list
     # @Return:
-    # @date: 2018.9.10
+    # @date: 2017.8.1
     #===========================================================
     '''
     sub_parser = parser.add_parser('getethernet',
@@ -33,7 +33,7 @@ def get_ethernet_info(members_uri, client):
     # @Method: Query IP address information.
     # @Param:client, slotid
     # @Return:
-    # @date: 2018.9.10
+    # @date: 2017.8.1 11:11
     #===========================================================
     '''
     resp = client.get_resource(members_uri)
@@ -94,6 +94,7 @@ def print_vlan(resp):
     vlan_info = resp["resource"].get("VLAN", None)
     if vlan_info is None:
         print('no data available for the resource')
+        return None
     else:
         # Query VLAN information.
         for key in vlan_info:
@@ -150,7 +151,7 @@ def get_port_collection(client, slotid):
     # @Method:  Query collection information.
     # @Param:client, slotid
     # @Return:
-    # @date: 2018.9.10
+    # @date: 2017.8.1
     #===========================================================
     '''
     url = "/redfish/v1/managers/%s/EthernetInterfaces" % slotid
@@ -178,7 +179,7 @@ def getethernet(client, parser, args):
     # @Method: IP address command processing functions
     # @Param:client, parser, args
     # @Return:
-    # @date: 2018.9.10
+    # @date: 2017.8.1 1:11
     #===========================================================
     '''
     if parser is None and args is None:

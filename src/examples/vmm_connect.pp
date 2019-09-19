@@ -14,12 +14,18 @@ node default {
   # load hosts from hiera data-source
   $hosts = lookup('hosts')
 
+  # ImageUri:
+  # Only Network File System (NFS),
+  # Common Internet File System (CIFS)
+  #  or HTTPS protocols are supported.
+
   # interate all hosts and get bios
   $hosts.each | String $hostname, Hash $data | {
-    rest::system::disk { "$hostname":
-      ibmc_host       =>  "$hostname",
-      ibmc_username   =>  "${data['username']}",
-      ibmc_password   =>  "${data['password']}",
+    rest::bmc::vmm::connect { $hostname:
+      ibmc_host     => $hostname,
+      ibmc_username => $data['username'],
+      ibmc_password => $data['password'],
+      image_uri     => 'nfs://10.10.10.2/images/ubuntu.iso',
     }
   }
 }

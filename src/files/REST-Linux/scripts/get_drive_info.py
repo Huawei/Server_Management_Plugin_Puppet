@@ -161,7 +161,7 @@ def get_drive_info(client, drive_uri, flag):
     '''
     drive_resp = client.get_resource(drive_uri)
     if drive_resp is None or drive_resp['status_code'] != 200:
-        return None
+        return drive_resp
 
     drive_info = drive_resp['resource']
     oem_info = drive_info['Oem']['Huawei']
@@ -195,7 +195,8 @@ def get_drive_info(client, drive_uri, flag):
                         key == 'Manufacturer' or key == 'CapacityBytes' or \
                         key == 'Protocol' or key == 'FailurePredicted' or \
                         key == 'HotspareType' or key == 'IndicatorLED' or \
-                        key == 'Model' or key == 'PredictedMediaLifeLeftPercent':
+                        key == 'Model' or key == 'Actions' or \
+                        key == 'PredictedMediaLifeLeftPercent':
             continue
 
         elif key == 'Oem':
@@ -215,6 +216,7 @@ def get_drive_info(client, drive_uri, flag):
         print(PF.format(key, drive_info[key]))
     print_smart_info(oem_info)
     print('-' * 50)
+    return drive_resp
 
 
 def check_drive_id_effective(client, drives_list, driveid, url, id_list):
@@ -261,7 +263,7 @@ def get_drives_array(client, slotid, drives_list):
         return resp
     if resp['resource']['Links'].get('Drives') is None:
         print('Failure: resource was not found')
-        return None
+        return resp
     drive_array = resp['resource']['Links']['Drives']
     if drive_array:
         index = 0
@@ -276,7 +278,7 @@ def get_drives_array(client, slotid, drives_list):
             index += 1
     else:
         print('Failure: resource was not found')
-        return None
+        return resp
 
     return resp
 
@@ -304,6 +306,7 @@ def getdriveinfo(client, parser, args):
 
     if not drives_list:
         print('Failure: resource was not found')
+        sys.exit(148)
         # Obtain information of all physical disks.
     if args.driveid is None:
         index = 0
@@ -317,13 +320,15 @@ def getdriveinfo(client, parser, args):
                     index += 1
                     continue
                 # Differentiated versions
+                print("Input 'q' quit:")
+                sys.stdout.flush()
                 if list_str[0] != '2':
-                    strtemp = input("Input 'q' quit:")  # pylint: disable=W0141
+                    strtemp = input("")  # pylint: disable=W0141
                 else:
-                    strtemp = raw_input("Input 'q' quit:")
+                    strtemp = raw_input("")
                 tmp = strtemp.replace('\r', '')
                 if tmp == 'q':
-                    return
+                    return resp
             index += 1
     # Obtain the information of a single physical resource.
     else:
@@ -332,7 +337,7 @@ def getdriveinfo(client, parser, args):
         ret = check_drive_id_effective(client, drives_list,
                                        args.driveid, url, id_list)
         if ret is True and len(url) != 0:
-            get_drive_info(client, url[0], 0)
+            resp = get_drive_info(client, url[0], 0)
         else:
             parser.error("the value of -I parameter is invalid, choose from "
                          '<' + ','.join(id_list) + '>')

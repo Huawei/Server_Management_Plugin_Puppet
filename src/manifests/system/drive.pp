@@ -4,7 +4,7 @@
 #
 # @example
 #   include rest::service
-define rest::system::disk (
+define rest::system::drive (
   $ibmc_username  = 'username',
   $ibmc_password  = 'password',
   $ibmc_host      = '127.0.0.1',
@@ -14,12 +14,12 @@ define rest::system::disk (
   # init rest
   include ::rest
 
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
-  $command = "getpdisk"
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
+  $command = 'getpdisk'
 
-  exec { "$title":
-    command => "${script} ${command}",
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
-  
+
 }

@@ -10,7 +10,7 @@ define rest::bmc::ntp::set (
   String $ibmc_host                           = '127.0.0.1',
   String $ibmc_port                           = '443',
   Optional[Boolean] $enabled                  = undef,
-  Optional[Rest::NtpAddrOrigin] $addr_origin = undef,
+  Optional[Rest::NtpAddrOrigin] $addr_origin  = undef,
   Optional[String[1, 68]] $preferred_server   = undef,
   Optional[String[1, 68]] $alternate_server   = undef,
   Optional[Boolean] $auth_enabled             = undef,
@@ -40,31 +40,31 @@ define rest::bmc::ntp::set (
   #   $run_command = "$run_command --http-port $http_port"
   # }
 
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
 
 
   $params = {
-    "-S"   => $enabled ? {
+    '-S'   => $enabled ? {
       undef   => undef,
       default => bool2str($enabled, 'True', 'False')
     },
-    "-M"   => $addr_origin,
-    "-PRE" => $preferred_server,
-    "-ALT" => $alternate_server,
-    "-AUT" => $auth_enabled ? {
+    '-M'   => $addr_origin,
+    '-PRE' => $preferred_server,
+    '-ALT' => $alternate_server,
+    '-AUT' => $auth_enabled ? {
       undef   => undef,
       default => bool2str($auth_enabled, 'True', 'False')
     },
-    "-MIN" => $min_interval,
-    "-MAX" => $max_interval,
+    '-MIN' => $min_interval,
+    '-MAX' => $max_interval,
   }
 
 
   $joined = join(join_keys_to_values(delete_undef_values($params), "' '"), "' '")
   $command = "setntp '${joined}'"
 
-  exec { "$title":
-    command => "${script} ${command}",
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
 }

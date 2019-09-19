@@ -23,40 +23,29 @@ node default {
 
   # interate all hosts and get bios
   $hosts.each | String $hostname, Hash $data | {
-    rest::bmc::snmp::set { "$hostname":
-      ibmc_host             => "$hostname",
-      ibmc_username         => "${data['username']}",
-      ibmc_password         => "${data['password']}",
+    rest::bmc::snmp::set { $hostname:
+      ibmc_host             => $hostname,
+      ibmc_username         => $data['username'],
+      ibmc_password         => $data['password'],
       v1_enabled            => true,
       v2_enabled            => true,
       long_password_enabled => false,
       rw_community_enabled  => true,
-      rw_community          => "${data['read-write-community']}",
-      ro_community          => "${data['read-only-community']}",
-      v3_auth_protocol      => "MD5",
-      v3_priv_protocol      => "AES",
+      rw_community          => $data['read-write-community'],
+      ro_community          => $data['read-only-community'],
+      v3_auth_protocol      => 'MD5',
+      v3_priv_protocol      => 'AES',
       trap_enabled          => true,
-      trap_version          => "V2C",
-      trap_v3_user          => "root",
-      trap_mode             => "OID",
-      trap_server_identity  => "HostName",
-      trap_community        => "${data['trap-community']}",
-      trap_alarm_severity   => "Normal",
-      trap_server1          => {
-        "enabled" => true,
-        "port"    => 101,
-        "address" => "10.0.0.1",
-      },
-      trap_server2          => {
-        "enabled" => true,
-        "port"    => 102,
-        "address" => "10.0.0.2",
-      },
-      trap_server3          => {
-        "enabled" => false,
-      },
+      trap_version          => 'V1',
+      trap_v3_user          => 'puppet',
+      trap_mode             => 'OID',
+      trap_server_identity  => 'HostName',
+      trap_community        => $data['trap-community'],
+      trap_alarm_severity   => 'Major',
       trap_server4          => {
-        "enabled" => false,
+        'enabled' => true,
+        'port'    => 202,
+        'address' => '10.10.10.2',
       }
     }
   }

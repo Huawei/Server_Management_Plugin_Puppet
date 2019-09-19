@@ -129,7 +129,7 @@ def get_memory_sys(client):
         print('-' * 50)
         print((MEM_FORMAT) % ('TotalSystemMemoryGiB',
                               sys_resp['resource']['MemorySummary']['TotalSystemMemoryGiB']))
-        print('\n[Status]')
+        print('\n[Summary]')
         print((MEM_FORMAT) % ('HealthRollup',
                               sys_resp['resource']['MemorySummary']['Status']['HealthRollup']))
     return sys_resp

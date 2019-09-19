@@ -16,17 +16,20 @@ node default {
 
   # protocol is required
   # available values: ["HTTP", "HTTPS", "SNMP", "VirtualMedia", "IPMI", "SSH", "KVMIP", "SSDP", "VNC"]
-  # scope available values: ["Link", "Site", "Organization"]
+  # notify scope (used in SSDP) available values: ["Link", "Site", "Organization"]
 
   # interate all hosts and get bios
   $hosts.each | String $hostname, Hash $data | {
-    rest::bmc::service::set { "$hostname":
-      ibmc_host       => "$hostname",
-      ibmc_username   => "${data['username']}",
-      ibmc_password   => "${data['password']}",
-      protocol        => "HTTP",
-      enabled         => true,
-      port            => 8086,
+    rest::bmc::service::set { $hostname:
+      ibmc_host       => $hostname,
+      ibmc_username   => $data['username'],
+      ibmc_password   => $data['password'],
+      protocol        => 'SSDP',
+      enabled         => false, # true | false
+      port            => 1900,  # [1, 65535]
+      notify_scope    => 'Site', # ["Link", "Site", "Organization"]
+      notify_interval => 600,    # [0, 1800]
+      notify_ttl      => 2,      # [1, 255]
     }
   }
 }

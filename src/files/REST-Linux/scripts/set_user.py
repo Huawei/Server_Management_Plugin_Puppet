@@ -67,7 +67,7 @@ def setuser(client, parser, args):
     payload = dict((k, v) for k, v in payload.iteritems() if v is not None)
     if len(payload) == 0:
         print("Failure: at least one update parameter must be set")
-    
+
     url = "/redfish/v1/AccountService/Accounts"
     resp = client.get_resource(url)
     if resp is None:

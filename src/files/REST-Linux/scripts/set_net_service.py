@@ -9,6 +9,7 @@
 # @date: 2017.7.21
 #==========================================================================
 '''
+import sys
 
 HELP_INFO = '''set network service'''
 NMIS_INFO = '''indicates the protocol SSDP property NotifyMultica''' + \
@@ -208,9 +209,9 @@ def prt_err(flg, msg):
     #==========================================================================
     '''
     if flg > 1:
-        print(("         %s") % msg)
+        print("         %s" % msg)
     else:
-        print(("%s: %s") % ('Failure', msg))
+        print("%s: %s" % ('Failure', msg))
     return
 
 
@@ -224,6 +225,7 @@ def print_err_message(info):
     #   @date: 2017.7.22
     #==========================================================================
     '''
+    result_flag = False
     idx = 0
     if info is None:
         return None
@@ -231,6 +233,7 @@ def print_err_message(info):
     flag = len(info)
     if flag < 1:
         print('Success: successfully completed request')
+        result_flag = True
     elif flag > 1:
         print(FAILURE_INFO)
     else:
@@ -265,7 +268,7 @@ def print_err_message(info):
 
         prt_err(flag, info[idx]['Message'])
 
-    return
+    return result_flag
 
 
 def check_result(resp):
@@ -298,9 +301,10 @@ def check_result(resp):
         else:
             err_message = None
 
-        print_err_message(err_message)
-
-    return None
+        result_flag = print_err_message(err_message)
+        if not result_flag and resp['status_code'] == 200:
+            sys.exit(144)
+    return resp
 
 
 def setnetservice(client, parser, args):
@@ -324,7 +328,7 @@ def setnetservice(client, parser, args):
 
     url = "/redfish/v1/Managers/%s/NetworkProtocol" % slotid
     resp = client.get_resource(url)
-    if resp == None or resp.get("status_code", "") == "":
+    if resp is None or resp.get("status_code", "") == "":
         return None
 
     if resp['status_code'] == 200:
@@ -343,7 +347,7 @@ def setnetservice(client, parser, args):
             # Invoke the set method to set values.
         resp_patch = client.set_resource(url, payload)
         # Check returned values and returned messages.
-        check_result(resp_patch)
+        resp = check_result(resp_patch)
 
     elif resp['status_code'] == 404:
         print('Failure: resource was not found')

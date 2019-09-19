@@ -9,23 +9,25 @@ define rest::bmc::service::get (
   $ibmc_password                      = 'password',
   $ibmc_host                          = '127.0.0.1',
   $ibmc_port                          = '443',
-  Optional[Rest::Protocol] $protocol = undef
+  # Optional[Rest::Protocol] $protocol = undef
 ) {
 
   # init rest
   include ::rest
 
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
 
-  if $protocol {
-    $command = "getnetsvc -PRO $protocol"
-  }
-  else {
-    $command = "getnetsvc"
-  }
+  # if $protocol {
+  #   $command = "getnetsvc -PRO ${protocol}"
+  # }
+  # else {
+  #   $command = 'getnetsvc'
+  # }
 
-  exec { "$title":
-    command => "${script} ${command}",
+  $command = 'getnetsvc'
+
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
 

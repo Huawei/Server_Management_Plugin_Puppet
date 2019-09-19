@@ -1,1 +1,1 @@
-type Rest::NotifyScope = Enum["Link", "Site", "Organization"]
+type Rest::NotifyScope = Enum['Link', 'Site', 'Organization']

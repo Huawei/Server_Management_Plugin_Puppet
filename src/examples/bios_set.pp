@@ -16,12 +16,12 @@ node default {
 
   # interate all hosts and get bios
   $hosts.each | String $hostname, Hash $data | {
-    rest::bios::set { "$hostname":
-      ibmc_host       =>  "$hostname",
-      ibmc_username   =>  "${data['username']}",
-      ibmc_password   =>  "${data['password']}",
-      attribute       =>  'QuickBoot',
-      value           =>  'Enabled',
+    rest::bios::set { $hostname:
+      ibmc_host     =>  $hostname,
+      ibmc_username =>  $data['username'],
+      ibmc_password =>  $data['password'],
+      attribute     =>  'QuickBoot',
+      value         =>  'Enabled',
     }
   }
 }

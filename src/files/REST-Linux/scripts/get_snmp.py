@@ -59,6 +59,8 @@ def getsnmp(client, parser, args):
         print(SNMP_FORMAT % ("SnmpV3Enabled", snmp.get("SnmpV3Enabled", None)))
         print(SNMP_FORMAT % ("LongPasswordEnabled", snmp.get("LongPasswordEnabled", None)))
         print(SNMP_FORMAT % ("RWCommunityEnabled", snmp.get("RWCommunityEnabled", None)))
+        # print(SNMP_FORMAT % ("ReadOnlyCommunity", snmp.get("ReadOnlyCommunity", None)))
+        # print(SNMP_FORMAT % ("ReadWriteCommunity", snmp.get("ReadWriteCommunity", None)))
         print(SNMP_FORMAT % ("SnmpV3AuthProtocol", snmp.get("SnmpV3AuthProtocol", None)))
         print(SNMP_FORMAT % ("SnmpV3PrivProtocol", snmp.get("SnmpV3PrivProtocol", None)))
 

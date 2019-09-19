@@ -17,14 +17,14 @@ PF2 = '{0:30}: {1}'
 
 def getstorage_init(parser, parser_list):
     '''
-	#====================================================================================
-	#   @Method:  Register and obtain storage information subcommands.
-	#   @Param:   parser, major command argparser
-				  parser_list, save subcommand parser list
-	#   @Return:
-	#   @author:
-	#====================================================================================
-	'''
+    #====================================================================================
+    #   @Method:  Register and obtain storage information subcommands.
+    #   @Param:   parser, major command argparser
+                  parser_list, save subcommand parser list
+    #   @Return:
+    #   @author:
+    #====================================================================================
+    '''
     sub_parser = parser.add_parser('getraid',
                                    help='''get raid information''')
     sub_parser.add_argument('-CI', dest='controllerid',
@@ -215,6 +215,7 @@ def getvolumesinfo(client, volumes_uri, flag):
                             ','.join(volume_info['Oem']['Huawei']['Spans'][index]['Drives'])))
             index += 1
     print(PF1.format(str_null, '-' * 50))
+    return volume_resp
 
 
 def controller_oem_info(oem_info):
@@ -354,13 +355,15 @@ def getcontrollerinfo(client, controller_uri, flag, page_ctl):
                 if 1 == volumes_length:
                     index += 1
                     continue
+                print("Input 'q' quit:")
+                sys.stdout.flush()
                 if list_strs[0] != '2':
-                    strtemp = input("Input 'q' quit:")  # pylint: disable=W0141
+                    strtemp = input("")  # pylint: disable=W0141
                 else:
-                    strtemp = raw_input("Input 'q' quit:")
+                    strtemp = raw_input("")
                 tmp = strtemp.replace('\r', '')
                 if 'q' == tmp:
-                    return
+                    return ctrl_resp
             index += 1
     else:
         print(PF2.format('Volumes', None))
@@ -389,7 +392,7 @@ def get_storage_info(args, resp, client):
     # No storage device exists in the environment.
     if not resp['resource']['Members']:
         print('Failure: resource was not found')
-        return resp
+        sys.exit(148)
     # RAID controller information
     storage_array = resp['resource']['Members']
     index = 0
@@ -402,16 +405,18 @@ def get_storage_info(args, resp, client):
 
         # Filter the SD controller environment.
         if url.find("RAIDStorage") > 0:
-            getcontrollerinfo(client, url, index,args.PAGE)
+            getcontrollerinfo(client, url, index, args.PAGE)
 
             if args.PAGE == "Enabled":
                 if 1 == array_len:
                     index += 1
                     continue
+                print("Input 'q' quit:")
+                sys.stdout.flush()
                 if list_str[0] != '2':
-                    strtemp = input("Input 'q' quit:")  # pylint: disable=W0141
+                    strtemp = input("")  # pylint: disable=W0141
                 else:
-                    strtemp = raw_input("Input 'q' quit:")
+                    strtemp = raw_input("")
                 tmp = strtemp.replace('\r', '')
                 if 'q' == tmp:
                     return
@@ -446,16 +451,17 @@ def get_specify_volume_info(args, client, systems, raidstorage, parser):
     return resp
 
 
-def get_specify_contrl_info(client, url, parser):
+def get_specify_contrl_info(client, url, parser, page):
     '''
     #====================================================================================
     #   @Method:  Obtain specified controller information.
     #   @Param:   client, RedfishClient object, url: specified URL
     #   @Return:  resp
-    #   @author: 
+    #   @author:
+    #   @modify: 2018.11.30 DTS2018113004239：getcontrollerinfo（）adds the fourth parameter page.
     #====================================================================================
     '''
-    resp = getcontrollerinfo(client, url, 0)
+    resp = getcontrollerinfo(client, url, 0, page)
     if resp is None:
         return resp
     elif resp['status_code'] == 404:
@@ -488,7 +494,7 @@ def check_storages(client, systems):
         flag = False
         if resp['resource']['Members@odata.count'] == 0:
             print('Failure: resource was not found')
-            return None
+            sys.exit(148)
         for i in range(0, len(resp['resource']['Members'])):
             url = resp['resource']['Members'][i]['@odata.id']
             if url.find("RAIDStorage") > 0:
@@ -496,22 +502,22 @@ def check_storages(client, systems):
                 break
         if not flag:
             print('Failure: resource was not found')
-            return None
+            sys.exit(148)
     return resp
 
 
 # Obtain storage information.
 def getstorage(client, parser, args):
     '''
-	#====================================================================================
-	#   @Method:  Obtain storage information subcommand processing functions.
-	#   @Param:   client, RedfishClient object
-				  parser, subcommand argparser. Export error messages when parameters are incorrect.
-				  args, parameter list
-	#   @Return:
-	#   @author: 
-	#====================================================================================
-	'''
+    #====================================================================================
+    #   @Method:  Obtain storage information subcommand processing functions.
+    #   @Param:   client, RedfishClient object
+                  parser, subcommand argparser. Export error messages when parameters are incorrect.
+                  args, parameter list
+    #   @Return:
+    #   @author:
+    #====================================================================================
+    '''
     slotid = client.get_slotid()
     if slotid is None:
         return None
@@ -526,7 +532,7 @@ def getstorage(client, parser, args):
     raidstorage = "/storages/raidstorage"
     if args.controllerid is not None and args.logicaldriveid is None:
         url = systems + raidstorage + str(args.controllerid)
-        return get_specify_contrl_info(client, url, parser)
+        return get_specify_contrl_info(client, url, parser, args.PAGE)
 
     # To query logical disk information, you must enter the controller ID.
     elif args.controllerid is None and args.logicaldriveid is not None:

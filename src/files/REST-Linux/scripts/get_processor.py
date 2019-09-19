@@ -132,9 +132,9 @@ def get_summary_sys(client):
                               sys_resp['resource']['ProcessorSummary']['Count']))
         print((PRO_FORMAT) % ('Model',
                               sys_resp['resource']['ProcessorSummary']['Model']))
-        print('\n[Status]')
+        print('\n[Summary]')
         print((PRO_FORMAT) % ('HealthRollup',
-                              sys_resp['resource']['MemorySummary']['Status']['HealthRollup']))
+                              sys_resp['resource']['ProcessorSummary']['Status']['HealthRollup']))
     return sys_resp
 
 

@@ -1,1 +1,1 @@
-type Rest::SmtpAlarmSeverity = Enum["Critical", "Major", "Minor", "Normal"]
+type Rest::SmtpAlarmSeverity = Enum['Critical', 'Major', 'Minor', 'Normal']

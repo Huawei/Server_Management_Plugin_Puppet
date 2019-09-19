@@ -103,7 +103,7 @@ def getsysboot(client, parser, args):
     if slotid is None:
         return None
 
-    length = 26
+    length = 35
     mformat = '%-*s:%s'
 
     url = "/redfish/v1/systems/%s" % slotid
@@ -116,14 +116,23 @@ def getsysboot(client, parser, args):
         target = resp['resource']['Boot']['BootSourceOverrideTarget']
         tenabled = resp['resource']['Boot']['BootSourceOverrideEnabled']
         mode = resp['resource']['Boot']['BootSourceOverrideMode']
-        mnabled = resp['resource']['Oem']['Huawei']['BootModeConfigOverIpmiEnabled']
+        mnabled = ""
+
+        if "BootModeChangeEnabled" in resp['resource']['Oem']['Huawei'].keys():
+            mnabled = resp['resource']['Oem']['Huawei']['BootModeChangeEnabled']
+        if "BootModeConfigOverIpmiEnabled" in resp['resource']['Oem']['Huawei'].keys():
+            mnabled = resp['resource']['Oem']['Huawei']['BootModeConfigOverIpmiEnabled']
 
         seq = _getsequence(resp['resource']['Oem']['Huawei'], client, slotid)
-          
         print(mformat %(length, 'BootSourceOverrideTarget', target))
         print(mformat %(length, 'BootSourceOverrideEnabled', tenabled))
         print(mformat %(length, 'BootSourceOverrideMode', mode))
-        print(mformat %(length, 'BootModeConfigOverIpmiEnabled', mnabled))
+
+        if "BootModeChangeEnabled" in resp['resource']['Oem']['Huawei'].keys():
+            print(mformat % (length, 'BootModeChangeEnabled', mnabled))
+        if "BootModeConfigOverIpmiEnabled" in resp['resource']['Oem']['Huawei'].keys():
+            print(mformat % (length, 'BootModeConfigOverIpmiEnabled', mnabled))
+
         print(mformat %(length, 'BootupSequence', seq))
        
-    return None
+    return resp

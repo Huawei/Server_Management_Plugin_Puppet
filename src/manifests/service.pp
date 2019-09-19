@@ -16,8 +16,8 @@ class rest::service() {
       logoutput => true,
       loglevel  => notice,
     }
-  } 
+  }
   else {
-    fail("OS '$::operatingsystem' is not support by rest module")
+    fail("OS '${::operatingsystem}' is not support by rest module")
   }
 }

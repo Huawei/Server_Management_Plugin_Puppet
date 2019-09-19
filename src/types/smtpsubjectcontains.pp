@@ -1,1 +1,1 @@
-type Rest::SmtpSubjectContains = Enum["HostName", "BoardSN", "ProductAssetTag"]
+type Rest::SmtpSubjectContains = Enum['HostName', 'BoardSN', 'ProductAssetTag']

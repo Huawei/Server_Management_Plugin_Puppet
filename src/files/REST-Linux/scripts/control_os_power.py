@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import upgrade_sp
 '''
 #=========================================================================
 #   @Description:  control os power
@@ -67,6 +68,6 @@ def controlospower(client, parser, args):
             print('Failure: operation not allowed')
 
         else:
-            print('Failure: unknown error')
+            upgrade_sp.print_status_code(resp)
 
-    return
+    return resp

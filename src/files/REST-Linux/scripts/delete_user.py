@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+
 '''
 #=========================================================================
 #   @Description:  delete user
@@ -41,11 +42,12 @@ def deleteuser(client, parser, args):
     if parser is None and args is None:
         return None
 
-    # �����û���Ϣ
     url = "/redfish/v1/AccountService/Accounts"
 
     resp = client.get_resource(url)
-    if (resp is None) or (resp['status_code'] != 200):
+    if resp is None:
+        return None
+    if resp['status_code'] != 200:
         error_message(client, resp)
         return resp
 
@@ -56,17 +58,15 @@ def deleteuser(client, parser, args):
             return None
         if user_resp['status_code'] != 200:
             error_message(client, user_resp)
-            return None
+            return user_resp
 
         if args.name == user_resp['resource']['UserName']:
-            # �ҵ�ָ���û� ɾ���˻�
             account_resp = delete_account(client, url)
             return account_resp
 
-    # ������û���ҵ�
-    print('Failure: the user does not exist')
+    parser.error('Failure: the user does not exist')
 
-    return None
+    return resp
 
 
 def delete_account(client, url):

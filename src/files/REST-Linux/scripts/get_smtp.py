@@ -5,7 +5,7 @@
 # @command: getsmtp
 # @Param: 
 # @author: 
-# @date: 2018.9.11
+# @date: 2018.8.11
 #==========================================================================
 '''
 SMTP_FORMAT = "%-30s: %s"
@@ -67,6 +67,8 @@ def getsmtp(client, parser, args):
                              smtpinfo.get("SenderUserName", None)))
         print(SMTP_FORMAT % ("SenderAddress",
                              smtpinfo.get("SenderAddress", None)))
+        # print(SMTP_FORMAT % ("SenderPassword",
+        #                      smtpinfo.get("SenderPassword", None)))
         print(SMTP_FORMAT % ("EmailSubject",
                              smtpinfo.get("EmailSubject", None)))
         print(SMTP_FORMAT % ("EmailSubjectContains", subject_contains))

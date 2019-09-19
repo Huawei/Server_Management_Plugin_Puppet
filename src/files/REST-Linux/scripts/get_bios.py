@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-
+import upgrade_sp
 '''
 #=========================================================================
 #   @Description:  get BIOS information
@@ -61,17 +61,17 @@ def getbios(client, parser, args):
             print('no data available for the resource')
             return resp
 
-        print_resource(info, args)
+        print_resource(info, args, parser)
 
     elif resp['status_code'] == 404:
         print('Failure: resource was not found')
-    elif resp['status_code'] == 400:
-        print("Failure: the request failed due to an internal service error")
+    else:
+        upgrade_sp.print_status_code(resp)
 
     return resp
 
 
-def print_resource(info, args):
+def print_resource(info, args, parser):
     '''
     #=====================================================================
     #   @Method:  Display the returned BIOS data.
@@ -79,6 +79,7 @@ def print_resource(info, args):
     #             args, command parameter
     #   @Return:
     #   @author:
+    #   @modify: 2018.11.30 DTS2018113004040��oModify the  prompt when  the -A parameter does not exist
     #=====================================================================
     '''
     if args.attribute is not None:
@@ -89,7 +90,7 @@ def print_resource(info, args):
                   (args.attribute, ":", info[args.attribute]))
             print("-" * 70)
         else:
-            print('Failure: attribute not found')
+            parser.error('Failure: attribute not found')
     else:
         print("-" * 70)
         for key in info:

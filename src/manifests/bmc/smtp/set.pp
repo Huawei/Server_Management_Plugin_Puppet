@@ -32,86 +32,86 @@ define rest::bmc::smtp::set (
   #   $run_command = "$run_command --http-port $http_port"
   # }
 
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
 
   $params = {
-    "-S"      => $enabled ? {
+    '-S'      => $enabled ? {
       undef   => undef,
       default => bool2str($enabled, 'True', 'False')
     },
-    "-SERVER" => $server_addr,
-    "-TLS"    => $tls_enabled ? {
+    '-SERVER' => $server_addr,
+    '-TLS'    => $tls_enabled ? {
       undef   => undef,
       default => bool2str($tls_enabled, 'True', 'False')
     },
-    "-ANON"   => $anon_enabled ? {
+    '-ANON'   => $anon_enabled ? {
       undef   => undef,
       default => bool2str($anon_enabled, 'True', 'False')
     },
-    "-SA"     => $sender_addr ? {
+    '-SA'     => $sender_addr ? {
       undef   => undef,
-      default => "$sender_addr",
+      default => $sender_addr,
     },
-    "-SP"     => $sender_password ? {
+    '-SP'     => $sender_password ? {
       undef   => undef,
-      default => "$sender_password",
+      default => $sender_password,
     },
-    "-SU"     => $sender_username ? {
+    '-SU'     => $sender_username ? {
       undef   => undef,
-      default => "$sender_username",
+      default => $sender_username,
     },
-    "-ES"     => $email_subject ? {
+    '-ES'     => $email_subject ? {
       undef   => undef,
-      default => "$email_subject",
+      default => $email_subject,
     },
-    "-AS"     => $alarm_severity,
+    '-AS'     => $alarm_severity,
   }
 
   $r1 = $receipt1 ? {
     undef   => {},
     default => {
-      "-R1-Enabled" => $receipt1["enabled"] ? {
+      '-R1-Enabled' => $receipt1["enabled"] ? {
         undef   => undef,
         default => bool2str($receipt1["enabled"], 'True', 'False'),
       },
-      "-R1-Addr"    => $receipt1["email_address"],
-      "-R1-Desc"    => $receipt1["description"],
+      '-R1-Addr'    => $receipt1["email_address"],
+      '-R1-Desc'    => $receipt1["description"],
     }
   }
 
   $r2 = $receipt2 ? {
     undef   => {},
     default => {
-      "-R2-Enabled" => $receipt2["enabled"] ? {
+      '-R2-Enabled' => $receipt2["enabled"] ? {
         undef   => undef,
         default => bool2str($receipt2["enabled"], 'True', 'False'),
       },
-      "-R2-Addr"    => $receipt2["email_address"],
-      "-R2-Desc"    => $receipt2["description"],
+      '-R2-Addr'    => $receipt2["email_address"],
+      '-R2-Desc'    => $receipt2["description"],
     }
   }
 
   $r3 = $receipt3 ? {
     undef   => {},
     default => {
-      "-R3-Enabled" => $receipt3["enabled"] ? {
+      '-R3-Enabled' => $receipt3["enabled"] ? {
         undef   => undef,
         default => bool2str($receipt3["enabled"], 'True', 'False'),
       },
-      "-R3-Addr"    => $receipt3["email_address"],
-      "-R3-Desc"    => $receipt3["description"],
+      '-R3-Addr'    => $receipt3["email_address"],
+      '-R3-Desc'    => $receipt3["description"],
     }
   }
 
   $r4 = $receipt4 ? {
     undef   => {},
     default => {
-      "-R4-Enabled" => $receipt4["enabled"] ? {
+      '-R4-Enabled' => $receipt4["enabled"] ? {
         undef   => undef,
         default => bool2str($receipt4["enabled"], 'True', 'False'),
       },
-      "-R4-Addr"    => $receipt4["email_address"],
-      "-R4-Desc"    => $receipt4["description"],
+      '-R4-Addr'    => $receipt4["email_address"],
+      '-R4-Desc'    => $receipt4["description"],
     }
   }
 
@@ -124,8 +124,8 @@ define rest::bmc::smtp::set (
   $joined = join(join_keys_to_values(delete_undef_values($params + $r1 + $r2 + $r3 + $r4), "' '"), "' '")
   $command = "setsmtp '${joined}' ${esc}"
 
-  exec { "$title":
-    command => "${script} ${command}",
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
 

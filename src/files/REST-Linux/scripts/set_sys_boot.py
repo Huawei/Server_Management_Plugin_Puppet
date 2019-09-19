@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
+
+import upgrade_sp
 '''
 #=========================================================================
 #   @Description:  set system boot information
@@ -48,7 +51,7 @@ def setsysboot_init(parser, parser_list):
     return 'setsysboot'
 
 
-def _printferrormessages(k, msgs):
+def _printferrormessages(k, msgs, bootEnablekey):
     '''
     #=========================================================================
     #   @Description:  _printf error messages
@@ -71,8 +74,8 @@ def _printferrormessages(k, msgs):
 
             if mgsagr == '#/Boot/BootSourceOverrideMode':
                 msg = mgsagr.replace('#/Boot/', '')
-            if "BootModeChangeEnabled" in mgsagr:
-                msg = "BootModeChangeEnabled"
+            if bootEnablekey in mgsagr:
+                msg = bootEnablekey
             print('         the property %s cannot be changed.' % msg)
     if k == 0:
 
@@ -83,8 +86,8 @@ def _printferrormessages(k, msgs):
             msg = ""
             if mgsagr == '#/Boot/BootSourceOverrideMode':
                 msg = mgsagr.replace('#/Boot/', '')
-            if "BootModeChangeEnabled" in mgsagr:
-                msg = "BootModeChangeEnabled"
+            if bootEnablekey in mgsagr:
+                msg = bootEnablekey
 
             if i == 0:
                 print('Failure: the property %s cannot be change' % msg)
@@ -147,7 +150,7 @@ def _checkbootsequence(sequence):
     return True
 
 
-def _setbootsequence(payload, client, slotid, sequence):
+def _setbootsequence(payload, client, slotid, sequence, parser):
     '''
     #=========================================================================
     #   @Description:  set boot sequence
@@ -158,10 +161,9 @@ def _setbootsequence(payload, client, slotid, sequence):
     #=========================================================================
     '''
 
-    if _checkbootsequence(sequence) == False:
-        print('Failure: four parameters that are not duplicate ' + \
+    if _checkbootsequence(sequence) is False:
+        parser.error('Failure: four parameters that are not duplicate ' + \
               'must be specified for the system boot order.')
-        return False
 
     url = "/redfish/v1/Systems/%s/Bios/Settings" % slotid
     resp = client.get_resource(url)
@@ -180,19 +182,19 @@ def _setbootsequence(payload, client, slotid, sequence):
         resp = client.set_resource(url, payloads, timeout=65)
 
         if resp is None:
-            return False
+            return None
 
         elif resp.get('status_code') == 200:
             return 'Success'
         else:
-            print('Failure: unknown error ')
-            return False
+            upgrade_sp.print_status_code(resp)
+            return resp
 
     else:
         value = [sequence[0], sequence[1], sequence[2], sequence[3]]
         payload['BootupSequence'] = value
 
-        return True
+    return resp
 
 
 def _makepayload(boot, huawei):
@@ -251,41 +253,49 @@ def setsysboot(client, parser, args):
     if slotid is None:
         return None
 
-    if args.target == None and args.tenabled == None and args.mode == None and \
-                    args.menabled == None and args.sequence == None:
+    if args.target is None and args.tenabled is None and args.mode is None and \
+                    args.menabled is None and args.sequence is None:
         parser.error('at least one parameter must be specified')
         return None
 
+    url = "/redfish/v1/systems/%s" % slotid
+    resp = client.get_resource(url)
+
     boot = {}
     huawei = {}
-    if args.target != None:
+    if args.target is not None:
         boot['BootSourceOverrideTarget'] = args.target
 
-    if args.tenabled != None:
+    if args.tenabled is not None:
         boot['BootSourceOverrideEnabled'] = args.tenabled
 
-    if args.mode != None:
+    if args.mode is not None:
         boot['BootSourceOverrideMode'] = args.mode
 
-    if args.menabled != None:
-        huawei['BootModeChangeEnabled'] = _stringtobool(args.menabled)
+    bootEnablekey = "BootModeChangeEnabled"
+    if resp['status_code'] == 200:
+        if "BootModeChangeEnabled" in resp['resource']['Oem']['Huawei'].keys():
+            bootEnablekey = "BootModeChangeEnabled"
+        if "BootModeConfigOverIpmiEnabled" in resp['resource']['Oem']['Huawei'].keys():
+            bootEnablekey = "BootModeConfigOverIpmiEnabled"
+
+    if args.menabled is not None:
+        huawei[bootEnablekey] = _stringtobool(args.menabled)
 
     ret = None
-    if args.sequence != None:
-        ret = _setbootsequence(huawei, client, slotid, args.sequence)
-        if ret != True and ret != 'Success':
-            return None
+    if args.sequence is not None:
+        ret = _setbootsequence(huawei, client, slotid, args.sequence, parser)
+        if ret != 'Success':
+            return ret
 
     payload = _makepayload(boot, huawei)
 
     if payload is None and ret == 'Success':
         print('Success: successfully completed request')
-        return None
+        return resp
 
-    url = "/redfish/v1/systems/%s" % slotid
-    resp = client.get_resource(url)
     if resp.get('status_code') != 200:
-        return None
+        return resp
 
     resp = client.set_resource(url, payload)
 
@@ -294,9 +304,10 @@ def setsysboot(client, parser, args):
 
     if resp['status_code'] == 200:
         # Some of the settings failed
-        if resp['resource'].get('@Message.ExtendedInfo') != None:
+        if resp['resource'].get('@Message.ExtendedInfo') is not None:
             messages = resp['resource']['@Message.ExtendedInfo']
-            _printferrormessages(1, messages)
+            _printferrormessages(1, messages, bootEnablekey)
+            sys.exit(144)
         # Success
         else:
             print('Success: successfully completed request')
@@ -305,6 +316,8 @@ def setsysboot(client, parser, args):
 
         if resp['status_code'] == 400:
             messages = resp['message']['error']['@Message.ExtendedInfo']
-            _printferrormessages(0, messages)
+            _printferrormessages(0, messages, bootEnablekey)
+        else:
+            upgrade_sp.print_status_code(resp)
 
-    return None
+    return resp

@@ -1,6 +1,6 @@
 # A description of what this class does
 #
-# @summary A short summary of the purpose of this class
+# @summary Restart iBMC 
 #
 # @example
 #   include rest::service
@@ -14,13 +14,11 @@ define rest::bmc::power::restart (
   # init rest
   include ::rest
 
-  # convert sequence to string
-  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}'"
-  $command = "bmcpowerctrl"
+  $script = "sh rest -H '${ibmc_host}' -p ${ibmc_port} -U '${ibmc_username}' -P '${ibmc_password}' --error-code"
+  $command = 'bmcpowerctrl'
 
-  exec { "$title":
-    command => "${script} ${command}",
+  exec { $title:
+    command => Sensitive.new("${script} ${command}"),
     *       => $rest::service::context,
   }
-  
 }

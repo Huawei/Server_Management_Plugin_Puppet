@@ -16,10 +16,10 @@ node default {
 
   # interate all hosts and get bios
   $hosts.each | String $hostname, Hash $data | {
-    rest::system::cpu { "$hostname":
-      ibmc_host       =>  "$hostname",
-      ibmc_username   =>  "${data['username']}",
-      ibmc_password   =>  "${data['password']}",
+    rest::system::cpu { $hostname:
+      ibmc_host     =>  $hostname,
+      ibmc_username =>  $data['username'],
+      ibmc_password =>  $data['password'],
     }
   }
 }

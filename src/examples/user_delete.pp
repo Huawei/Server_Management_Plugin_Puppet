@@ -14,17 +14,13 @@ node default {
   # load hosts from hiera data-source
   $hosts = lookup('hosts')
 
-  # user role available values:
-  #   "Administrator", "Operator", "Commonuser", "NoAccess",
-  #   "CustomRole1", "CustomRole2", "CustomRole3", "CustomRole4"
-
   # interate all hosts and get bios
   $hosts.each | String $hostname, Hash $data | {
     rest::user::delete { "$hostname":
       ibmc_host     => "$hostname",
       ibmc_username => "${data['username']}",
       ibmc_password => "${data['password']}",
-      username      => "test",
+      username      => "puppet",
     }
   }
 }

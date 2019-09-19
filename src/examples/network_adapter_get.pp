@@ -9,3 +9,17 @@
 # Learn more about module testing here:
 # https://puppet.com/docs/puppet/latest/bgtm.html#testing-your-module
 #
+node default {
+
+  # load hosts from hiera data-source
+  $hosts = lookup('hosts')
+
+  # interate all hosts and get bios
+  $hosts.each | String $hostname, Hash $data | {
+    rest::system::network_adapter { $hostname:
+      ibmc_host     =>  $hostname,
+      ibmc_username =>  $data['username'],
+      ibmc_password =>  $data['password'],
+    }
+  }
+}

@@ -14,16 +14,12 @@ node default {
   # load hosts from hiera data-source
   $hosts = lookup('hosts')
 
-  # protocol is optional
-  # available values: ["HTTP", "HTTPS", "SNMP", "VirtualMedia", "IPMI", "SSH", "KVMIP", "SSDP", "VNC"]
-
   # interate all hosts and get bios
   $hosts.each | String $hostname, Hash $data | {
-    rest::bmc::service::get { "$hostname":
-      ibmc_host       =>  "$hostname",
-      ibmc_username   =>  "${data['username']}",
-      ibmc_password   =>  "${data['password']}",
-      protocol        =>  "HTTP"
+    rest::bmc::service::get { $hostname:
+      ibmc_host     =>  $hostname,
+      ibmc_username =>  $data['username'],
+      ibmc_password =>  $data['password'],
     }
   }
 }

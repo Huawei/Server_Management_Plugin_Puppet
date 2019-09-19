@@ -1,20 +1,20 @@
 # -*- coding:utf-8 -*-
 
-'''
+"""
 #=========================================================================
 #   @Description:  set BIOS attributes
 #
 #   @author:
 #   @Date:
 #=========================================================================
-'''
+"""
 
 from json import load
 from os import path
 
 
 def setbios_init(parser, parser_list):
-    '''
+    """
     #=====================================================================
     #   @Method:  BIOS menu item setting subcommand
     #   @Param:   parser, major command argparser
@@ -22,7 +22,7 @@ def setbios_init(parser, parser_list):
     #   @Return:
     #   @author:
     #=====================================================================
-    '''
+    """
     sub_parser = parser.add_parser('setbios',
                                    help='''set BIOS setup attributes''')
     sub_parser.add_argument('-A', dest='attribute',
@@ -33,9 +33,9 @@ def setbios_init(parser, parser_list):
                             help='''attribute value''')
     sub_parser.add_argument('-F', dest='file',
                             required=False,
-                            help='''Set the local BIOS configuration file ''' + \
-                                 '''in JSON format. The file contains the attributes ''' + \
-                                 '''to be configured, for example, ''' + \
+                            help='''Set the local BIOS configuration file ''' +
+                                 '''in JSON format. The file contains the attributes ''' +
+                                 '''to be configured, for example, ''' +
                                  '''{"attribute":"value", "attribute2":"value2" ...}''')
 
     parser_list['setbios'] = sub_parser
@@ -44,7 +44,7 @@ def setbios_init(parser, parser_list):
 
 
 def setbios(client, parser, args):
-    '''
+    """
     #=====================================================================
     #   @Method: BIOS menu item setting subcommand processing function
     #   @Param:  client, RedfishClient object
@@ -53,7 +53,7 @@ def setbios(client, parser, args):
     #   @Return:
     #   @author:
     #=====================================================================
-    '''
+    """
     if parser is None and args is None:
         return None
 
@@ -79,7 +79,7 @@ def setbios(client, parser, args):
 
 
 def parameter_processing(client, parser, args, slotid):
-    '''
+    """
     #=====================================================================
     #   @Method: parameter processing
     #   @Param:  client, RedfishClient object
@@ -89,14 +89,14 @@ def parameter_processing(client, parser, args, slotid):
     #   @Return:
     #   @author:
     #=====================================================================
-    '''
-    if (args.attribute and args.value) and (args.file is None):
+    """
+    if args.attribute and args.value and args.file is None:
         # attribute
-        payload = payload_attribute(client, parser, args, slotid)
+        payload, resp = payload_attribute(client, parser, args, slotid)
         if payload is None:
-            return None
+            return resp
 
-    elif (args.file) and (args.attribute is None and args.value is None):
+    elif args.file and args.attribute is None and args.value is None:
         # file
         payload = payload_file(args)
         if payload is None:
@@ -110,7 +110,7 @@ def parameter_processing(client, parser, args, slotid):
 
 
 def payload_attribute(client, parser, args, slotid):
-    '''
+    """
     #=====================================================================
     #   @Method: single BIOS item setting parameter processing
     #   @Param:  client, RedfishClient object
@@ -119,11 +119,10 @@ def payload_attribute(client, parser, args, slotid):
     #   @Return:
     #   @author:
     #=====================================================================
-    '''
+    """
     resp = getbios_attribute(client, slotid)
     if resp is None:
-        return None
-
+        return None, resp
     if args.attribute in resp:
         if isinstance(resp[args.attribute], int):
             # int
@@ -131,23 +130,23 @@ def payload_attribute(client, parser, args, slotid):
                 value = int(args.value)
             except ValueError:
                 parser.error("incorrect -V value")
-                return None
+                return None, resp
 
             payload = {'Attributes': {args.attribute: value}}
-            return payload
+            return payload, resp
 
         # str
         payload = {'Attributes': {args.attribute: args.value}}
-        return payload
+        return payload, resp
 
     else:
         print('Failure: the attribute does not exist')
 
-    return None
+    return None, resp
 
 
 def getbios_attribute(client, slotid):
-    '''
+    """
     #=====================================================================
     #   @Method: Obtain BIOS items.
     #   @Param:  client, RedfishClient object
@@ -155,7 +154,7 @@ def getbios_attribute(client, slotid):
     #   @Return:
     #   @author:
     #=====================================================================
-    '''
+    """
     url = "/redfish/v1/Systems/%s/Bios" % slotid
     resp = client.get_resource(url)
     if resp is None:
@@ -169,18 +168,18 @@ def getbios_attribute(client, slotid):
     else:
         print("Failure: the request failed due to an internal service error")
 
-    return None
+    return resp
 
 
 def payload_file(args):
-    '''
+    """
     #=====================================================================
     #   @Method: file BIOS item setting parameter processing
     #   @Param:  args, parameter list
     #   @Return:
     #   @author:
     #=====================================================================
-    '''
+    """
     if not path.isfile(args.file):
         print("Failure: the file does not exist")
         return None
@@ -204,7 +203,7 @@ def payload_file(args):
 
 
 def set_bios_info(client, payload, slotid):
-    '''
+    """
     #=====================================================================
     #   @Method: Set BIOS information.
     #   @Param:  client, RedfishClient object
@@ -212,7 +211,7 @@ def set_bios_info(client, payload, slotid):
     #   @Return:
     #   @author:
     #=====================================================================
-    '''
+    """
     url = "/redfish/v1/Systems/%s/Bios/Settings" % slotid
     resp = client.get_resource(url)
     if resp is None:
@@ -222,9 +221,8 @@ def set_bios_info(client, payload, slotid):
         if resp['status_code'] == 404:
             print('Failure: resource was not found')
         else:
-            print("Failure: the request failed " + \
-                  "due to an internal service error")
-        return None
+            print("Failure: the request failed due to an internal service error")
+        return resp
 
     resp = client.set_resource(url, payload, timeout=20)
 
@@ -232,27 +230,25 @@ def set_bios_info(client, payload, slotid):
 
 
 def error_message(message, error_code):
-    '''
+    """
     #=====================================================================
     #   @Method:  error handling
     #   @Param:  error_code
     #   @Return:
     #   @author:
     #=====================================================================
-    '''
+    """
     if error_code == 404:
         print("Failure: resource was not found")
     elif error_code == 400:
         messageid = message[0]['MessageId'].split('.')[-1]
 
         if messageid == 'PropertyModificationNeedPrivilege':
-            print('Failure: you do not have the required permissions' + \
-                  ' to perform this operation')
+            print('Failure: you do not have the required permissions to perform this operation')
         elif messageid == 'MalformedJSON':
             print("Failure: JSON file format fail")
         elif messageid == 'PropertyUnknown':
-            print("Failure: " + change_message(message[0]['Message']). \
-                  replace('properties', 'attributes'))
+            print("Failure: " + change_message(message[0]['Message']).replace('properties', 'attributes'))
         elif messageid == 'SettingPropertyFailed' \
                 or messageid == 'PropertyValueTypeError' \
                 or messageid == 'PropertyValueNotInList' \
@@ -266,24 +262,24 @@ def error_message(message, error_code):
                 or messageid == 'PropertyModificationNotSupported':
             print("Failure: " + change_message(message[0]['Message']))
         else:
-            print('Failure: the request failed' + \
-                  ' due to an internal service error')
+            print('Failure: the request failed due to an internal service error')
     else:
         print("Failure: the request failed due to an internal service error")
 
 
 def change_message(messageinfo):
-    '''
+    """
     #====================================================================================
     #   @Method:  changemessage
     #             Delete 'Attributes/'.  Replace 'property' with 'attribute'.
-    #             Change strings with capitalized first letters and ended with '.' into strings with lowercase first letters and delete '.'.
+    #             Change strings with capitalized first letters and ended with '.' into strings with lowercase first
+    #             letters and delete '.'.
     #   @Param:
     #   @Return:
     #   @author:
     #====================================================================================
-    '''
-    messageinfo = (messageinfo.replace('Attributes/', '')). \
+    """
+    messageinfo = (messageinfo.replace('Attributes/', '')).\
         replace('property', 'attribute')
 
     if (messageinfo[0] >= 'A' and messageinfo[0] <= 'Z') \
